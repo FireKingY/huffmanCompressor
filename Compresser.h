@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <map>
+#include <bitset>
 using namespace std;
 
 struct Node
@@ -24,12 +26,16 @@ struct cmp
 class Compresser
 {
     public:
+        Compresser();
         ~Compresser();
         void compress(const string& filename);
         void depress(const string& filename);
         void count(const string& filename);
-        void CreatedCompressedFile(const string& filename);
+        void CreatCompressedFile(const string& filename);
+        void CreatDepressedFile(const string& filename);
         Node* buildHuffTreeByCnt();
+        Node* buildHuffTreeByFile(const string& filename);
+        void run(bitset<8>& b);
         void dfs(Node* root, const string& code);
         string codes[300];
         int cnt[300];
@@ -38,5 +44,8 @@ class Compresser
         // typedef pair<char,int> Node;
         typedef unsigned char uchar;
         vector<uchar> buf;
+        vector<uchar> buf2;
+        // map<string, uchar> rcodes;
         Node* root;
+        unsigned long long size;
 };
