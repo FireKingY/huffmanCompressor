@@ -37,15 +37,15 @@ class Compresser
         Node* buildHuffTreeByFile(const string& filename);
         void run(bitset<8>& b);
         void dfs(Node* root, const string& code);
+        void clear();
         string codes[300];
         int cnt[300];
         
     private:
-        // typedef pair<char,int> Node;
         typedef unsigned char uchar;
         vector<uchar> buf;
         vector<uchar> buf2;
-        // map<string, uchar> rcodes;
         Node* root;
         unsigned long long size;
+        char charNum;
 };

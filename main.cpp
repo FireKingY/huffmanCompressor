@@ -7,7 +7,7 @@ int main()
     Compresser com;
     string name;
 
-    char in;
+    int in;
     while(1)
     {
         cout<<"1.压缩文件"<<endl;

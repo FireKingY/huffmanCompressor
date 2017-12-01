@@ -4,19 +4,48 @@
 #include <bitset>
 #include <map>
 #include <iostream>
+#include <stack>
 using namespace std;
 
-Compresser::Compresser():root(nullptr),size(0){}
+Compresser::Compresser():root(nullptr),size(0),charNum(0){}
 Compresser::~Compresser()
 {
     if(root != nullptr)
         delete root;
 }
 
+void Compresser::clear()
+{
+    buf.clear();
+    buf2.clear();
+    size=0;
+    charNum = 0;
+
+    stack<Node*> s;
+
+    //二叉树的非递归遍历 回收内存
+    Node* cur = root;
+    while(cur != nullptr || !s.empty())
+    {
+        while(cur != nullptr)
+        {
+            s.push(cur);
+            cur = cur->left;
+        }
+
+    if(s.empty())
+        break;
+    cur = s.top();
+    cur = cur ->right;
+    delete s.top();
+    s.pop();
+    }
+}
+
 void Compresser::compress(const string& filename)
 {
-    buf.clear();    
-    buf2.clear();    
+    clear();
+
     count(filename);
     root = buildHuffTreeByCnt();
     dfs(root, "");
@@ -108,20 +137,13 @@ void Compresser::CreatCompressedFile(const string& filename)
             {
                 n=0;
                 out.write((char*)&byt, 1);
-                // for(int i=0;i<8;++i)
-                //     cout<<byt[i];
                 byt.reset();                
             }
         }
         
     }
     if(n!=0)
-    {
         out.write((char*)&byt, 1);
-        // for(int i=0;i<8;++i)
-        //     cout<<byt[i];
-    }
-    // cout<<endl;
     out.close();
 
     out.open(filename + ".huff", ios::out);
@@ -136,8 +158,8 @@ void Compresser::CreatCompressedFile(const string& filename)
 
 void  Compresser::depress(const string& filename)
 {
-    buf.clear();
-    buf2.clear();
+    clear();
+    
     if(root != nullptr)
         delete root;
     root = buildHuffTreeByFile(filename + ".huff");
