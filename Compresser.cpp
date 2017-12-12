@@ -7,7 +7,7 @@
 #include <stack>
 using namespace std;
 
-Compresser::Compresser():root(nullptr),size(0),charNum(0){}
+Compresser::Compresser():root(nullptr),old_size(0),charNum(0){}
 Compresser::~Compresser()
 {
     if(root != nullptr)
@@ -18,7 +18,8 @@ void Compresser::clear()
 {
     buf.clear();
     buf2.clear();
-    size=0;
+    old_size = 0;
+    new_size = 0;
     charNum = 0;
 
     stack<Node*> s;
@@ -40,6 +41,7 @@ void Compresser::clear()
     delete s.top();
     s.pop();
     }
+    root = nullptr;
 }
 
 void Compresser::compress(const string& filename)
@@ -50,6 +52,12 @@ void Compresser::compress(const string& filename)
     root = buildHuffTreeByCnt();
     dfs(root, "");
     CreatCompressedFile(filename + ".comp");
+    
+    cout<<"****************"<<endl;
+    cout<<"源文件大小："<<old_size<<"bits"<<endl;
+    cout<<"压缩文件大小："<<new_size<<"bits"<<endl;
+    cout<<"压缩率:"<<double(new_size)/old_size*100<<"%"<<endl;
+    cout<<"****************"<<endl;
 }
 
 void Compresser::count(const string& filename)
@@ -60,10 +68,10 @@ void Compresser::count(const string& filename)
     ifstream in;
     in.open(filename, ios::binary);
     uchar temp;
-    size = 0;
+    old_size = 0;
     while( in.read((char*)&temp,1) )
     {
-        ++size;
+        ++old_size;
         buf.push_back(temp);
         ++cnt[int(temp)];
     }
@@ -137,6 +145,7 @@ void Compresser::CreatCompressedFile(const string& filename)
             {
                 n=0;
                 out.write((char*)&byt, 1);
+                ++new_size;
                 byt.reset();                
             }
         }
@@ -147,7 +156,7 @@ void Compresser::CreatCompressedFile(const string& filename)
     out.close();
 
     out.open(filename + ".huff", ios::out);
-    out<<size<<endl;
+    out<<old_size<<"bits"<<endl;
     for(int i=0;i<256;++i)
     {
         if(cnt[i]!=0)
@@ -170,6 +179,7 @@ void  Compresser::depress(const string& filename)
     uchar temp;
     while( in.read((char*)&temp, 1) )
     {
+        ++new_size;        
         buf.push_back(temp);
     }
 
@@ -182,6 +192,12 @@ void  Compresser::depress(const string& filename)
     }
 
     CreatDepressedFile(filename + ".dpred");
+
+    cout<<"****************"<<endl;
+    cout<<"源文件大小："<<old_size<<"bits"<<endl;
+    cout<<"压缩文件大小："<<new_size<<"bits"<<endl;
+    cout<<"压缩率:"<<double(new_size)/old_size*100<<"%"<<endl;
+    cout<<"****************"<<endl;
 }
 
 Node* Compresser::buildHuffTreeByFile(const string& filename)
@@ -212,7 +228,7 @@ Node* Compresser::buildHuffTreeByFile(const string& filename)
         root->ch = ch;
     };
 
-    in>>size;
+    in>>old_size;
     while(in>>ch)
     {
         in>>code;
@@ -239,6 +255,7 @@ void Compresser::run(bitset<8>& b)
         if(cur->left == nullptr && cur->right == nullptr)
         {
             buf2.push_back(cur->ch);
+            // ++new_size;
             // cout<<cur->ch;
             cur = root;            
         }
@@ -249,8 +266,8 @@ void Compresser::CreatDepressedFile(const string& filename)
 {
     ofstream out;
     out.open(filename, ios::binary);
-    out.write((char*)&buf2[0], size);
-    // for(int i=0;i<size;++i)
+    out.write((char*)&buf2[0], old_size);
+    // for(int i=0;i<old_size;++i)
     // {
         
     // }

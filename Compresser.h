@@ -46,6 +46,7 @@ class Compresser
         vector<uchar> buf;
         vector<uchar> buf2;
         Node* root;
-        unsigned long long size;
+        unsigned long long old_size;
+        unsigned long long new_size;        
         char charNum;
 };
