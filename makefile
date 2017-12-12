@@ -10,4 +10,6 @@ $(TARGET):$(OBJS)
 $(OBJS):%.o:%.cpp
 	$(CC) -c $< -o $(OBJSDIR)/$@ $(FLAGS)
 
+clean:
+	rm *.comp *.huff *.dpred
 	
