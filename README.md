@@ -1,2 +1,2 @@
 # huffmanCompressor
-利用huffman编码压缩文件
+鍒╃敤huffman缂栫爜鍘嬬缉鏂囦欢
